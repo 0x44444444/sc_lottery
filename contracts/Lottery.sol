@@ -6,11 +6,15 @@ import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 //So, our contract inherits from this?
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+//Using Chainlink for randomness
+import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
+
 //The code for which lives at:
 //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
 //Yes, because we've used the keyword 'is' which causes our contract to inherit from the contract named 'Ownable'.
-contract Lottery is Ownable {
+//Furthermore, we're now also inheriting from 'VRFConsumerBase' at the same time?
+contract Lottery is VRFConsumerBase, Ownable {
     //So 'address payable' is a special type
     //It's like an address type, but it has additional 'transfer' and 'send' members
     //(in addition to 'balance')
@@ -34,7 +38,19 @@ contract Lottery is Ownable {
 
     LOTTERY_STATE public lottery_state;
 
-    constructor(address _priceFeedAddress) public {
+    uint256 public oracle_fee;
+    bytes32 public oracle_keyhash;
+
+    //We can actually hit the constructor of a parent contract by mentioning it explicitly here
+    //And even pass along the parameters we pass into our constructor, into the constructor of the parent contract
+    //thusly, with the address of the vrf coordinator, and address of the version of LINK we're using (testnet or otherwise)
+    constructor(
+        address _priceFeedAddress,
+        address _vrfCoordinator,
+        address _linkToken,
+        uint256 _oracle_fee,
+        bytes32 _oracle_keyhash
+    ) public VRFConsumerBase(_vrfCoordinator, _linkToken) {
         //Set the owner to the deployer of the contract
         //owner = msg.sender;
         //No need, as the contsructor we've inherited from Ownable does this for us
@@ -45,6 +61,8 @@ contract Lottery is Ownable {
         usdEntryFee = 50;
         ethUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         lottery_state = LOTTERY_STATE.CLOSED;
+        oracle_fee = _oracle_fee;
+        oracle_keyhash = _oracle_keyhash;
     }
 
     function enter() public payable {
@@ -77,14 +95,39 @@ contract Lottery is Ownable {
 
     function endLottery() public onlyOwner {
         require(lottery_state == LOTTERY_STATE.OPEN, "Lottery is not running");
+
+        lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
+        //The definition of this function has 'returns (bytes32 requestId) in it, so we don't need
+        //to explicitly do:
+        //bytes32 whatever = requestRandomness(oracle_keyhash, oracle_fee);
+        //Note that this is an asynchronous process
+        //So, we make the request, and we have a handler function somwhere that the oracle will hit up
+        //when it delivers the random number
+        requestRandomness(oracle_keyhash, oracle_fee);
     }
 
-    function pickWinner() public onlyOwner {
-        //How not to source pseudo randomness:
-        //Cast to uint256, the hashed value of the abi-encoded tuple of the transaction nonce,
-        //sender address, block difficulty and timestamp used to invoke the function
-        //Divide by modulo number of players to select one of them
-        /* uint256(
+    //So, the parent contract VRFConsumerBase has the stub of a definition for this, tagged 'virtual'
+    //which means that when we inherit it, we have to populate it with a function that actually does something via the 'override' keyword
+    //Scope is 'internal' which allows calls from this contract or contracts deriving from it (i.e. deriving from VRFConsumerBase,
+    //which this contract obviously does, since it is our parent)
+    //Don't want anyone calling this function and supplying spurious randomness
+    function fulfillRandomness(
+        bytes32 _requestid,
+        uint256 _randomness
+    ) internal override {
+        require(
+            lottery_state = LOTTERY_STATE.CALCULATING_WINNER,
+            "Not in the process of calculating a result"
+        );
+        require(_randomness > 0, "no randomness provided");
+    }
+
+    //function pickWinner() public onlyOwner {
+    //How not to source pseudo randomness:
+    //Cast to uint256, the hashed value of the abi-encoded tuple of the transaction nonce,
+    //sender address, block difficulty and timestamp used to invoke the function
+    //Divide by modulo number of players to select one of them
+    /* uint256(
             keccack256(
                 abi.encodePacked(
                     nonce,
@@ -94,7 +137,7 @@ contract Lottery is Ownable {
                 )
             )
         ) % players.length; */
-    }
+    // }
 
     //Apparently we're using the OpenZeppelin version of onlyOwner for this example, rather than our own
 
