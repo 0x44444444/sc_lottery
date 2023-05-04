@@ -116,7 +116,7 @@ contract Lottery is VRFConsumerBase, Ownable {
         uint256 _randomness
     ) internal override {
         require(
-            lottery_state = LOTTERY_STATE.CALCULATING_WINNER,
+            lottery_state == LOTTERY_STATE.CALCULATING_WINNER,
             "Not in the process of calculating a result"
         );
         require(_randomness > 0, "no randomness provided");
