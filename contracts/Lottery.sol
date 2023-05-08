@@ -24,6 +24,9 @@ contract Lottery is VRFConsumerBase, Ownable {
     //i.e. those entering the lottery
     address payable[] public players;
 
+    address payable public recentWinner;
+    uint256 public randomness;
+
     uint256 public usdEntryFee;
     AggregatorV3Interface internal ethUSDPriceFeed;
 
@@ -120,6 +123,16 @@ contract Lottery is VRFConsumerBase, Ownable {
             "Not in the process of calculating a result"
         );
         require(_randomness > 0, "no randomness provided");
+        //modulo divide randomness to get an index
+        uint256 indexOfWinner = _randomness % players.length;
+        recentWinner = players[indexOfWinner];
+        //transfer the funds to the winner
+        recentWinner.transfer(address(this).balance);
+        //reset the lottery
+        //Wipe out the existing array of payable addresses
+        players = new address payable[](0);
+        lottery_state == LOTTERY_STATE.CLOSED;
+        randomness = _randomness;
     }
 
     //function pickWinner() public onlyOwner {
