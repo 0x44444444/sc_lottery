@@ -44,6 +44,11 @@ contract Lottery is VRFConsumerBase, Ownable {
     uint256 public oracle_fee;
     bytes32 public oracle_keyhash;
 
+    //Adding a event.  Events are like structured logging output from the blockchain.
+    //They're not directly accessible by contracts.
+    //This is almost like defining a type (i.e. the structure of the event is, in this case, just a bytes32 but could be something else)
+    event RequestedRandomness(bytes32 requestId);
+
     //We can actually hit the constructor of a parent contract by mentioning it explicitly here
     //And even pass along the parameters we pass into our constructor, into the constructor of the parent contract
     //thusly, with the address of the vrf coordinator, and address of the version of LINK we're using (testnet or otherwise)
@@ -106,7 +111,8 @@ contract Lottery is VRFConsumerBase, Ownable {
         //Note that this is an asynchronous process
         //So, we make the request, and we have a handler function somwhere that the oracle will hit up
         //when it delivers the random number
-        requestRandomness(oracle_keyhash, oracle_fee);
+        bytes32 requestId = requestRandomness(oracle_keyhash, oracle_fee);
+        emit RequestedRandomness(requestId);
     }
 
     //So, the parent contract VRFConsumerBase has the stub of a definition for this, tagged 'virtual'
