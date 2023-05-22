@@ -121,10 +121,28 @@ def test_can_pick_winner_correctly():
     # Act
     lottery.startLottery({"from": account})
 
-    # Would make more sense to have a bunch of entries, but still
+    # Capture the starting balances of each account here
+    starting_balances = {}
+
+    account1 = get_account(index=1)
+    account2 = get_account(index=2)
+
+    # Some entries
     lottery.enter({"from": account, "value": value})
-    lottery.enter({"from": get_account(index=1), "value": value})
-    lottery.enter({"from": get_account(index=2), "value": value})
+    starting_balances[account.address] = account.balance()
+    lottery.enter({"from": account1, "value": value})
+    starting_balances[account1.address] = account1.balance()
+    lottery.enter({"from": account2, "value": value})
+    starting_balances[account2.address] = account2.balance()
+
+    for account_address in starting_balances:
+        print(
+            f"Account balance:  {account_address} -> {starting_balances[account_address]}"
+        )
+
+    # Capture the lottery balance here
+    lottery_balance = lottery.balance()
+    print(f"Lottery balance is: {lottery_balance}")
 
     tx = fund_with_link(lottery.address)
     tx.wait(1)
@@ -153,9 +171,22 @@ def test_can_pick_winner_correctly():
     # assert lottery.lottery_state() == 1
 
     anticipated_winner = STATIC_RNG % 3
+    anticipated_winner_acc = get_account(index=anticipated_winner)
 
-    assert lottery.recentWinner() == get_account(index=anticipated_winner).address
+    assert lottery.recentWinner() == anticipated_winner_acc.address
     print(
-        f"RecentWinner is {lottery.recentWinner()} and get_account returns {get_account(index=anticipated_winner).address}"
+        f"RecentWinner is {lottery.recentWinner()} and get_account returns {anticipated_winner_acc.address}"
     )
     assert lottery.balance() == 0
+
+    # The 'starting balance' check in the tutorial wouldn't work, as it's setting
+    # a starting balance for the account after the lottery has already taken place
+    # (and also setting the lottery balance when it's already 0)
+    # Have implemented it correctly.
+    assert (
+        anticipated_winner_acc.balance()
+        == starting_balances[anticipated_winner_acc.address] + lottery_balance
+    )
+    print(
+        f"Account {anticipated_winner_acc.address} balance is {anticipated_winner_acc.balance()} which should be {starting_balances[anticipated_winner_acc.address]} + {lottery_balance}"
+    )
