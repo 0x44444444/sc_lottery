@@ -97,17 +97,6 @@ def test_can_end_lottery():
     # Enum type, first option 'CALCULATING_WINNER' would be 2
     assert lottery.lottery_state() == 2
 
-    # So apparently we're separating this part out into a separate test
-
-    # Waiting for the oracle to respond with some randomness
-    """  time.sleep(60)
-
-    # Enum type, first option 'CLOSED' would be 1
-    assert lottery.lottery_state() == 1
-
-    # There was only one entry, so the recent winner should be us
-    assert lottery.recentWinner() == account.address """
-
 
 def test_can_pick_winner_correctly():
     # Unit tests only for local development

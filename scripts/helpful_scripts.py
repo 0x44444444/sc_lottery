@@ -34,6 +34,9 @@ def get_account(index=None, id=None):
         network.show_active() in FORKED_LOCAL_ENVIRONMENTS
     ):
         return accounts[0]
+    else:
+        # Live network, use the dev one
+        return accounts.load("development-bs-738")
 
 
 # Mapping of contract names to contract types
@@ -122,6 +125,7 @@ def fund_with_link(
     # transfer(destination, amount, source)
     # Yes, because the function is being called by the msg.sender to make the transfer...
 
+    print(f"Destination contract address: {contract_address} amount: {amount}")
     tx = link_token.transfer(contract_address, amount, {"from": account})
 
     # If we don't have the full contract source code available and imported into Brownie
