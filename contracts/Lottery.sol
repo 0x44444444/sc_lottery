@@ -1,20 +1,30 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.6.6;
+pragma solidity ^0.8.4;
 
-import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+//import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 //So, our contract inherits from this?
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 //Using Chainlink for randomness
-import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
+//OK, so the on-chain version on Sepolia is VRFConsumerBaseV2.sol
+//Which is likely why there's a reversion when attempting to get randomness
+//Can we switch to V2 without screwing everything up?
+//Entails switching to solidity 0.8.4 minimum rather than 0.6.6.
+//import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+
+//Will either have to rewrite this using VRFV2WrapperConusmer base as per:
+//https://docs.chain.link/vrf/v2/direct-funding/examples/get-a-random-number
+//Or just test on Rinkeby
 
 //The code for which lives at:
 //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
 //Yes, because we've used the keyword 'is' which causes our contract to inherit from the contract named 'Ownable'.
 //Furthermore, we're now also inheriting from 'VRFConsumerBase' at the same time?
-contract Lottery is VRFConsumerBase, Ownable {
+contract Lottery is VRFConsumerBaseV2, Ownable {
     //So 'address payable' is a special type
     //It's like an address type, but it has additional 'transfer' and 'send' members
     //(in addition to 'balance')
@@ -58,7 +68,7 @@ contract Lottery is VRFConsumerBase, Ownable {
         address _linkToken,
         uint256 _oracle_fee,
         bytes32 _oracle_keyhash
-    ) public VRFConsumerBase(_vrfCoordinator, _linkToken) {
+    ) public VRFConsumerBaseV2(_vrfCoordinator, _linkToken) {
         //Set the owner to the deployer of the contract
         //owner = msg.sender;
         //No need, as the contsructor we've inherited from Ownable does this for us

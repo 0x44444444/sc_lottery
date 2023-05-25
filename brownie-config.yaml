@@ -1,8 +1,10 @@
 dependencies:
   # - <organization/repo>@<version>
-  - smartcontractkit/chainlink-brownie-contracts@1.1.1
+  #- smartcontractkit/chainlink-brownie-contracts@1.1.1
+  - smartcontractkit/chainlink-brownie-contracts@0.6.1
   #- smartcontractkit/chainlink@2.0.0
-  - OpenZeppelin/openzeppelin-contracts@3.4.0
+  #- OpenZeppelin/openzeppelin-contracts@3.4.0
+  - OpenZeppelin/openzeppelin-contracts@4.9.0
 compiler:
   solc:
     #version: 0.6.6
@@ -10,9 +12,11 @@ compiler:
       #- '@chainlink=smartcontractkit/chainlink@2.0.0'
       #- '@chainlink=smartcontractkit/'
       # Neither of these is correct
-      - '@chainlink=smartcontractkit/chainlink-brownie-contracts@1.1.1'
+      #- '@chainlink=smartcontractkit/chainlink-brownie-contracts@1.1.1'
+      - '@chainlink=smartcontractkit/chainlink-brownie-contracts@0.6.1'
       #- '@chainlink=smartcontractkit/chainlink-brownie-contracts@0.2.1'
-      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.4.0'
+      #- '@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.4.0'
+      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.9.0'
 dotenv: .env
 networks:
   #default: ganache-local
@@ -22,21 +26,21 @@ networks:
     eth_usd_price_feed: '0x694AA1769357215DE4FAC081bf1f309aDC325306'
     link_token: '0x779877a7b0d9e8603169ddbd7836e478b4624789'
     keyhash: '0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c'
-    fee: 250000000000000000
+    fee: 251000000000000000
     verify: True
   goerli:
     vrf_coordinator: '0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D'
     eth_usd_price_feed: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e'
     link_token: '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'
     keyhash: '0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15'
-    fee: 250000000000000000
+    fee: 251000000000000000
     verify: True
   mainnet-fork:
     eth_usd_price_feed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
     verify: False
   development:
     keyhash: '0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15'
-    fee: 250000000000000000
+    fee: 251000000000000000
     verify: False
   ganache-local:
     verify: False
