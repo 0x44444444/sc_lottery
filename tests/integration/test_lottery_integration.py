@@ -24,9 +24,9 @@ def test_can_pick_winner_integration():
     tx = fund_with_link(lottery.address)
     tx.wait(1)
     tx = lottery.endLottery(
-        {"from": account, "gas_limit": 120000, "allow_revert": True}
+        {"from": account, "gas_limit": 12000000, "allow_revert": True}
     )
-    time.sleep(60)
+    time.sleep(120)
 
     assert lottery.recentWinner() == account
     assert lottery.balance() == 0
@@ -72,7 +72,7 @@ def test_can_end_lottery_integration():
     tx = lottery.endLottery(
         {"from": account, "gas_limit": 12000000, "allow_revert": True}
     )
-    time.sleep(60)
+    time.sleep(120)
 
     assert lottery.recentWinner() == account
     assert lottery.balance() == 0

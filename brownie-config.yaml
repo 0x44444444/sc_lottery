@@ -1,10 +1,10 @@
 dependencies:
   # - <organization/repo>@<version>
-  #- smartcontractkit/chainlink-brownie-contracts@1.1.1
-  - smartcontractkit/chainlink-brownie-contracts@0.6.1
+  - smartcontractkit/chainlink-brownie-contracts@1.1.1
+  #- smartcontractkit/chainlink-brownie-contracts@0.6.1
   #- smartcontractkit/chainlink@2.0.0
-  #- OpenZeppelin/openzeppelin-contracts@3.4.0
-  - OpenZeppelin/openzeppelin-contracts@4.9.0
+  - OpenZeppelin/openzeppelin-contracts@3.4.0
+  #- OpenZeppelin/openzeppelin-contracts@4.9.0
 compiler:
   solc:
     #version: 0.6.6
@@ -12,11 +12,11 @@ compiler:
       #- '@chainlink=smartcontractkit/chainlink@2.0.0'
       #- '@chainlink=smartcontractkit/'
       # Neither of these is correct
-      #- '@chainlink=smartcontractkit/chainlink-brownie-contracts@1.1.1'
-      - '@chainlink=smartcontractkit/chainlink-brownie-contracts@0.6.1'
+      - '@chainlink=smartcontractkit/chainlink-brownie-contracts@1.1.1'
+      #- '@chainlink=smartcontractkit/chainlink-brownie-contracts@0.6.1'
       #- '@chainlink=smartcontractkit/chainlink-brownie-contracts@0.2.1'
-      #- '@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.4.0'
-      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.9.0'
+      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.4.0'
+      #- '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.9.0'
 dotenv: .env
 networks:
   #default: ganache-local
@@ -29,10 +29,15 @@ networks:
     fee: 251000000000000000
     verify: True
   goerli:
-    vrf_coordinator: '0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D'
+    #We need v1 of the VRF coordinator
+    #vrf_coordinator: '0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D'
+    vrf_coordinator: '0x2bce784e69d2Ff36c71edcB9F88358dB0DfB55b4'
     eth_usd_price_feed: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e'
     link_token: '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'
-    keyhash: '0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15'
+    #And the corresponding v1 keyhash.  See:
+    #https://docs.chain.link/vrf/v1/supported-networks
+    #keyhash: '0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15'
+    keyhash: '0x0476f9a745b61ea5c0ab224d3a6e4c99f0b02fce4da01143a4f70aa80ae76e8a'
     fee: 251000000000000000
     verify: True
   mainnet-fork:

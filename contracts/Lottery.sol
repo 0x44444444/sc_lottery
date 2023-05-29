@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.6.6;
 
-//import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+//import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 //So, our contract inherits from this?
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -12,19 +12,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 //Which is likely why there's a reversion when attempting to get randomness
 //Can we switch to V2 without screwing everything up?
 //Entails switching to solidity 0.8.4 minimum rather than 0.6.6.
-//import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
-import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
 
 //Will either have to rewrite this using VRFV2WrapperConusmer base as per:
 //https://docs.chain.link/vrf/v2/direct-funding/examples/get-a-random-number
 //Or just test on Rinkeby
+//Which doesn't appear to be active.  So, refactor.
+//Actually, there appears to be a v1 VRF on goerli...
 
 //The code for which lives at:
 //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
 //Yes, because we've used the keyword 'is' which causes our contract to inherit from the contract named 'Ownable'.
 //Furthermore, we're now also inheriting from 'VRFConsumerBase' at the same time?
-contract Lottery is VRFConsumerBaseV2, Ownable {
+contract Lottery is VRFConsumerBase, Ownable {
     //So 'address payable' is a special type
     //It's like an address type, but it has additional 'transfer' and 'send' members
     //(in addition to 'balance')
@@ -68,7 +69,7 @@ contract Lottery is VRFConsumerBaseV2, Ownable {
         address _linkToken,
         uint256 _oracle_fee,
         bytes32 _oracle_keyhash
-    ) public VRFConsumerBaseV2(_vrfCoordinator, _linkToken) {
+    ) public VRFConsumerBase(_vrfCoordinator, _linkToken) {
         //Set the owner to the deployer of the contract
         //owner = msg.sender;
         //No need, as the contsructor we've inherited from Ownable does this for us
@@ -147,7 +148,7 @@ contract Lottery is VRFConsumerBaseV2, Ownable {
         //reset the lottery
         //Wipe out the existing array of payable addresses
         players = new address payable[](0);
-        lottery_state == LOTTERY_STATE.CLOSED;
+        lottery_state = LOTTERY_STATE.CLOSED;
         randomness = _randomness;
     }
 
